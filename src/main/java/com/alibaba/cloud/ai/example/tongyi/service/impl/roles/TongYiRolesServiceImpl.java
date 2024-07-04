@@ -21,6 +21,7 @@ import java.util.Map;
 
 import com.alibaba.cloud.ai.example.tongyi.service.AbstractTongYiServiceImpl;
 import com.alibaba.cloud.ai.example.tongyi.service.TongYiService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,38 +42,36 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class TongYiRolesServiceImpl extends AbstractTongYiServiceImpl {
 
-	private static final Logger logger = LoggerFactory.getLogger(TongYiService.class);
+    private static final Logger logger = LoggerFactory.getLogger(TongYiService.class);
 
-	private final ChatClient chatClient;
+    private final ChatClient chatClient;
 
-	public TongYiRolesServiceImpl(ChatClient chatClient) {
-		this.chatClient = chatClient;
-	}
 
-	@Value("classpath:/prompts/assistant-message.st")
-	private Resource systemResource;
+    @Value("classpath:/prompts/assistant-message.st")
+    private Resource systemResource;
 
-	@Override
-	public AssistantMessage genRole(String message, String name, String voice) {
+    @Override
+    public AssistantMessage genRole(String message, String name, String voice) {
 
-		/**
-		 TongYi model rules: Role must be user or assistant and Content length must be greater than 0.
-		 SystemPromptTemplate systemPromptTemplate = new SystemPromptTemplate(systemResource);
-		 org.springframework.ai.chat.messages.Message systemMessage = systemPromptTemplate.createMessage(Map.of("name", name, "voice", voice));
+        /**
+         TongYi model rules: Role must be user or assistant and Content length must be greater than 0.
+         SystemPromptTemplate systemPromptTemplate = new SystemPromptTemplate(systemResource);
+         org.springframework.ai.chat.messages.Message systemMessage = systemPromptTemplate.createMessage(Map.of("name", name, "voice", voice));
 
-		 In TongYi models, System role must appear at the top of the message and can only appear once.
-		 https://help.aliyun.com/zh/dashscope/developer-reference/api-details?spm=a2c4g.11186623.0.0.4dbcc11akAaRbs#b9ad0a10cfhpe
+         In TongYi models, System role must appear at the top of the message and can only appear once.
+         https://help.aliyun.com/zh/dashscope/developer-reference/api-details?spm=a2c4g.11186623.0.0.4dbcc11akAaRbs#b9ad0a10cfhpe
 
-		 */
+         */
 
-		SystemPromptTemplate systemPromptTemplate = new SystemPromptTemplate(systemResource);
-		org.springframework.ai.chat.messages.Message systemPromptTemplateMessage = systemPromptTemplate.createMessage(Map.of("name", name, "voice", voice));
-		UserMessage userMessage = new UserMessage(message);
+        SystemPromptTemplate systemPromptTemplate = new SystemPromptTemplate(systemResource);
+        org.springframework.ai.chat.messages.Message systemPromptTemplateMessage = systemPromptTemplate.createMessage(Map.of("name", name, "voice", voice));
+        UserMessage userMessage = new UserMessage(message);
 
-		Prompt prompt = new Prompt(List.of(systemPromptTemplateMessage, userMessage));
+        Prompt prompt = new Prompt(List.of(systemPromptTemplateMessage, userMessage));
 
-		return chatClient.call(prompt).getResult().getOutput();
-	}
+        return chatClient.call(prompt).getResult().getOutput();
+    }
 }

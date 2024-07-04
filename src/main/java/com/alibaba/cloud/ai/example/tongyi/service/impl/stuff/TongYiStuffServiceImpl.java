@@ -22,6 +22,7 @@ import java.util.Map;
 import com.alibaba.cloud.ai.example.tongyi.models.Completion;
 import com.alibaba.cloud.ai.example.tongyi.service.AbstractTongYiServiceImpl;
 import com.alibaba.cloud.ai.example.tongyi.service.TongYiService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,39 +44,36 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class TongYiStuffServiceImpl extends AbstractTongYiServiceImpl {
 
-	private static final Logger logger = LoggerFactory.getLogger(TongYiService.class);
+    private static final Logger logger = LoggerFactory.getLogger(TongYiService.class);
 
-	private final ChatClient chatClient;
+    private final ChatClient chatClient;
 
-	public TongYiStuffServiceImpl(ChatClient chatClient) {
-		this.chatClient = chatClient;
-	}
 
-	@Value("classpath:/docs/wikipedia-curling.md")
-	private Resource docsToStuffResource;
+    @Value("classpath:/docs/wikipedia-curling.md")
+    private Resource docsToStuffResource;
 
-	@Value("classpath:/prompts/qa-prompt.st")
-	private Resource qaPromptResource;
+    @Value("classpath:/prompts/qa-prompt.st")
+    private Resource qaPromptResource;
 
-	// TongYi model: Range of input length should be [1, 6000]
-	@Override
-	public Completion stuffCompletion(String message, boolean stuffit) {
+    // TongYi model: Range of input length should be [1, 6000]
+    @Override
+    public Completion stuffCompletion(String message, boolean stuffit) {
 
-		PromptTemplate promptTemplate = new PromptTemplate(qaPromptResource);
-		Map<String, Object> map = new HashMap<>();
-		map.put("question", message);
+        PromptTemplate promptTemplate = new PromptTemplate(qaPromptResource);
+        Map<String, Object> map = new HashMap<>();
+        map.put("question", message);
 
-		if (stuffit) {
-			map.put("context", docsToStuffResource);
-		}
-		else {
-			map.put("context", "");
-		}
+        if (stuffit) {
+            map.put("context", docsToStuffResource);
+        } else {
+            map.put("context", "");
+        }
 
-		Prompt prompt = promptTemplate.create(map);
-		Generation generation = chatClient.call(prompt).getResult();
-		return new Completion(generation.getOutput().getContent());
-	}
+        Prompt prompt = promptTemplate.create(map);
+        Generation generation = chatClient.call(prompt).getResult();
+        return new Completion(generation.getOutput().getContent());
+    }
 }

@@ -20,6 +20,7 @@ import java.util.Map;
 
 import com.alibaba.cloud.ai.example.tongyi.service.AbstractTongYiServiceImpl;
 import com.alibaba.cloud.ai.example.tongyi.service.TongYiService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,45 +43,40 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class TongYiSimpleServiceImpl extends AbstractTongYiServiceImpl {
 
-	private static final Logger logger = LoggerFactory.getLogger(TongYiService.class);
+    private static final Logger logger = LoggerFactory.getLogger(TongYiService.class);
 
-	private final ChatClient chatClient;
+    private final ChatClient chatClient;
 
-	private final StreamingChatClient streamingChatClient;
+    private final StreamingChatClient streamingChatClient;
 
-	@Autowired
-	public TongYiSimpleServiceImpl(ChatClient chatClient, StreamingChatClient streamingChatClient) {
 
-		this.chatClient = chatClient;
-		this.streamingChatClient = streamingChatClient;
-	}
+    @Override
+    public String completion(String message) {
 
-	@Override
-	public String completion(String message) {
+        Prompt prompt = new Prompt(new UserMessage(message));
 
-		Prompt prompt = new Prompt(new UserMessage(message));
+        return chatClient.call(prompt).getResult().getOutput().getContent();
+    }
 
-		return chatClient.call(prompt).getResult().getOutput().getContent();
-	}
+    @Override
+    public Map<String, String> streamCompletion(String message) {
 
-	@Override
-	public Map<String, String> streamCompletion(String message) {
+        StringBuilder fullContent = new StringBuilder();
 
-		StringBuilder fullContent = new StringBuilder();
+        streamingChatClient.stream(new Prompt(message))
+                .flatMap(chatResponse -> Flux.fromIterable(chatResponse.getResults()))
+                .map(content -> content.getOutput().getContent())
+                .doOnNext(fullContent::append)
+                .last()
+                .map(lastContent -> Map.of(message, fullContent.toString()))
+                .block();
 
-		streamingChatClient.stream(new Prompt(message))
-				.flatMap(chatResponse -> Flux.fromIterable(chatResponse.getResults()))
-				.map(content -> content.getOutput().getContent())
-				.doOnNext(fullContent::append)
-				.last()
-				.map(lastContent -> Map.of(message, fullContent.toString()))
-				.block();
+        log.info(fullContent.toString());
 
-		log.info(fullContent.toString());
-
-		return Map.of(message, fullContent.toString());
-	}
+        return Map.of(message, fullContent.toString());
+    }
 
 }

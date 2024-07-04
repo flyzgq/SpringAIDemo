@@ -16,27 +16,20 @@
 
 package com.alibaba.cloud.ai.example.tongyi.controller;
 
-import java.util.Map;
-
 import com.alibaba.cloud.ai.example.tongyi.models.ActorsFilms;
 import com.alibaba.cloud.ai.example.tongyi.models.Completion;
 import com.alibaba.cloud.ai.example.tongyi.service.TongYiService;
-
+import jakarta.annotation.Resource;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.image.ImageResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 /**
  * TongYi models Spring Cloud Alibaba Controller.
  *
  * @author fly
-
  */
 
 @RestController
@@ -44,96 +37,90 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin
 public class TongYiController {
 
-	@Autowired
-	@Qualifier("tongYiSimpleServiceImpl")
-	private TongYiService tongYiSimpleService;
+    @Resource
+    private TongYiService tongYiSimpleServiceImpl;
 
-	@GetMapping("/example")
-	public String completion(
-			@RequestParam(value = "message", defaultValue = "Tell me a joke")
-			String message
-	) {
 
-		return tongYiSimpleService.completion(message);
-	}
+    @GetMapping("/example")
+    public String completion(
+            @RequestParam(value = "message", defaultValue = "Tell me a joke")
+            String message
+    ) {
 
-	@GetMapping("/stream")
-	public Map<String, String> streamCompletion(
-			@RequestParam(value = "message", defaultValue = "请告诉我西红柿炖牛腩怎么做？")
-			String message
-	) {
+        return tongYiSimpleServiceImpl.completion(message);
+    }
 
-		return tongYiSimpleService.streamCompletion(message);
-	}
+    @GetMapping("/stream")
+    public Map<String, String> streamCompletion(
+            @RequestParam(value = "message", defaultValue = "请告诉我西红柿炖牛腩怎么做？")
+            String message
+    ) {
 
-	@Autowired
-	@Qualifier("tongYiOutputParseServiceImpl")
-	private TongYiService tongYiOutputService;
+        return tongYiSimpleServiceImpl.streamCompletion(message);
+    }
 
-	@GetMapping("/output")
-	public ActorsFilms generate(
-			@RequestParam(value = "actor", defaultValue = "Jeff Bridges") String actor
-	) {
+    @Resource
+    private TongYiService tongYiOutputParseServiceImpl;
 
-		return tongYiOutputService.genOutputParse(actor);
-	}
+    @GetMapping("/output")
+    public ActorsFilms generate(
+            @RequestParam(value = "actor", defaultValue = "Jeff Bridges") String actor
+    ) {
 
-	@Autowired
-	@Qualifier("tongYiPromptTemplateServiceImpl")
-	private TongYiService tongYiPromptTemplateService;
+        return tongYiOutputParseServiceImpl.genOutputParse(actor);
+    }
 
-	@GetMapping("/prompt-tmpl")
-	public AssistantMessage completion(@RequestParam(value = "adjective", defaultValue = "funny") String adjective,
-			@RequestParam(value = "topic", defaultValue = "cows") String topic) {
+    @Resource
+    private TongYiService tongYiPromptTemplateServiceImpl;
 
-		return tongYiPromptTemplateService.genPromptTemplates(adjective, topic);
-	}
+    @GetMapping("/prompt-tmpl")
+    public AssistantMessage completion(@RequestParam(value = "adjective", defaultValue = "funny") String adjective,
+                                       @RequestParam(value = "topic", defaultValue = "cows") String topic) {
 
-	@Autowired
-	@Qualifier("tongYiRolesServiceImpl")
-	private TongYiService tongYiRolesService;
+        return tongYiPromptTemplateServiceImpl.genPromptTemplates(adjective, topic);
+    }
 
-	@GetMapping("/roles")
-	public AssistantMessage generate(
-			@RequestParam(value = "message", defaultValue = "Tell me about three famous pirates from the Golden Age of Piracy and why they did.  Write at least a sentence for each pirate.") String message,
-			@RequestParam(value = "name", defaultValue = "bot") String name,
-			@RequestParam(value = "voice", defaultValue = "pirate") String voice) {
+    @Resource
+    private TongYiService tongYiRolesServiceImpl;
 
-		return tongYiRolesService.genRole(message, name, voice);
-	}
+    @GetMapping("/roles")
+    public AssistantMessage generate(
+            @RequestParam(value = "message", defaultValue = "Tell me about three famous pirates from the Golden Age of Piracy and why they did.  Write at least a sentence for each pirate.") String message,
+            @RequestParam(value = "name", defaultValue = "bot") String name,
+            @RequestParam(value = "voice", defaultValue = "pirate") String voice) {
 
-	@Autowired
-	@Qualifier("tongYiStuffServiceImpl")
-	private TongYiService tongYiStuffService;
+        return tongYiRolesServiceImpl.genRole(message, name, voice);
+    }
 
-	@GetMapping("/stuff")
-	public Completion completion(@RequestParam(value = "message",
-			defaultValue = "Which athletes won the mixed doubles gold medal in curling at the 2022 Winter Olympics?") String message,
-			@RequestParam(value = "stuffit", defaultValue = "false") boolean stuffit) {
+    @Resource
+    private TongYiService tongYiStuffServiceImpl;
 
-		return tongYiStuffService.stuffCompletion(message, stuffit);
-	}
+    @GetMapping("/stuff")
+    public Completion completion(@RequestParam(value = "message",
+            defaultValue = "Which athletes won the mixed doubles gold medal in curling at the 2022 Winter Olympics?") String message,
+                                 @RequestParam(value = "stuffit", defaultValue = "false") boolean stuffit) {
 
-	@Autowired
-	@Qualifier("tongYiImagesServiceImpl")
-	private TongYiService tongYiImgService;
+        return tongYiStuffServiceImpl.stuffCompletion(message, stuffit);
+    }
 
-	@GetMapping("/img")
-	public ImageResponse genImg(@RequestParam(value = "prompt",
-			defaultValue = "Painting a picture of blue water and blue sky.") String imgPrompt) {
+    @Resource
+    private TongYiService tongYiImagesServiceImpl;
 
-		return tongYiImgService.genImg(imgPrompt);
-	}
+    @GetMapping("/img")
+    public ImageResponse genImg(@RequestParam(value = "prompt",
+            defaultValue = "Painting a picture of blue water and blue sky.") String imgPrompt) {
 
-	@Autowired
-	@Qualifier("tongYiAudioSimpleServiceImpl")
-	private TongYiService tongYiAudioService;
+        return tongYiImagesServiceImpl.genImg(imgPrompt);
+    }
+
+    @Resource
+    private TongYiService tongYiAudioSimpleServiceImpl;
 
 	@GetMapping("/audio")
 	public String genAudio(@RequestParam(value = "prompt",
 			defaultValue = "你好，Spring Cloud Alibaba AI 框架！") String prompt) {
 
-		return tongYiAudioService.genAudio(prompt);
+		return tongYiAudioSimpleServiceImpl.genAudio(prompt);
 	}
 
 }
