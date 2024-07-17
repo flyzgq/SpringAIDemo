@@ -1,1 +1,0 @@
-Tell me a {name} joke about {voice}.
