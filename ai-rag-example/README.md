@@ -9,12 +9,12 @@ RAG 是一个基于检索的生成模型，它将检索和生成结合在一起�
 version: '3.8'
 
 services:
-  redis:
-    image: redis/redis-stack-server
+   redis:
+      image: redis/redis-stack-server
       container_name: redis
       hostname: redis
       ports:
-        - 6379:6379
+         - 6379:6379
 ```
 
 使用 docker compose up -d 启动，然后您可以通过 docker ps | grep redis 查看容器是否正常运行。
