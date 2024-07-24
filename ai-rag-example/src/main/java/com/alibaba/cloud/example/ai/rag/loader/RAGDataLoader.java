@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.zip.GZIPInputStream;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +40,7 @@ import org.springframework.stereotype.Component;
  */
 
 @Component
+@RequiredArgsConstructor
 public class RAGDataLoader implements ApplicationRunner {
 
 	private static final Logger logger = LoggerFactory.getLogger(RAGDataLoader.class);
@@ -52,11 +54,6 @@ public class RAGDataLoader implements ApplicationRunner {
 
 	private final RedisVectorStoreProperties properties;
 
-	public RAGDataLoader(RedisVectorStore vectorStore, RedisVectorStoreProperties properties) {
-
-		this.vectorStore = vectorStore;
-		this.properties = properties;
-	}
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {

@@ -18,6 +18,7 @@ package com.alibaba.cloud.ai.example.tongyi.service;
 
 import com.alibaba.cloud.ai.example.tongyi.context.MessageContextHolder;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
@@ -31,17 +32,13 @@ import org.springframework.stereotype.Service;
  */
 
 @Service
+@RequiredArgsConstructor
 public class ChatMsgService {
 
 	private final ChatModel chatModel;
 
 	private final MessageContextHolder messageContextHolder;
 
-	@Autowired
-	public ChatMsgService(ChatModel chatModel, MessageContextHolder messageContextHolder) {
-		this.chatModel = chatModel;
-		this.messageContextHolder = messageContextHolder;
-	}
 
 	public String completion(String message) {
 

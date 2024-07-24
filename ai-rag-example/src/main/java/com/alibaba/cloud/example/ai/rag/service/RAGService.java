@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatModel;
@@ -40,6 +41,7 @@ import org.springframework.stereotype.Service;
  */
 
 @Service
+@RequiredArgsConstructor
 public class RAGService {
 
 	@Value("classpath:/prompts/system-qa.st")
@@ -52,11 +54,6 @@ public class RAGService {
 
 	private final VectorStore store;
 
-	public RAGService(ChatModel chatModel, VectorStore store) {
-
-		this.chatModel = chatModel;
-		this.store = store;
-	}
 
 	public Generation retrieve(String message) {
 
