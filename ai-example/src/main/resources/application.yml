@@ -25,7 +25,7 @@ spring:
     ai:
       tongyi:
         connection:
-          api-key: sk-0e6c387446ff45d0924111475a82462e
+          api-key: sk-7bfe5fb5c78645a78af2b2751c1d2e02
         chat:
           enabled: true
 
